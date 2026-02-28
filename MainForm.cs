@@ -514,13 +514,11 @@ namespace TimeTracker
             Label lblInvoiceLocation = new Label { Text = "Location:", Location = new System.Drawing.Point(20, 25), AutoSize = true };
             ComboBox cmbInvoiceLocation = new ComboBox { Name = "cmbInvoiceLocation", Location = new System.Drawing.Point(20, 50), Width = 300, DropDownStyle = ComboBoxStyle.DropDownList };
 
-            Label lblStartDate = new Label { Text = "Start Date (MM/DD/YYYY):", Location = new System.Drawing.Point(340, 25), AutoSize = true };
-            TextBox txtStartDate = new TextBox { Name = "txtStartDate", Location = new System.Drawing.Point(340, 50), Width = 150 };
-            txtStartDate.KeyPress += DateTextBox_KeyPress;
+            Label lblStartDate = new Label { Text = "Start Date:", Location = new System.Drawing.Point(340, 25), AutoSize = true };
+            DateTimePicker dtpStartDate = new DateTimePicker { Name = "dtpStartDate", Location = new System.Drawing.Point(340, 50), Width = 200, Format = DateTimePickerFormat.Short };
 
-            Label lblEndDate = new Label { Text = "End Date (MM/DD/YYYY):", Location = new System.Drawing.Point(510, 25), AutoSize = true };
-            TextBox txtEndDate = new TextBox { Name = "txtEndDate", Location = new System.Drawing.Point(510, 50), Width = 150 };
-            txtEndDate.KeyPress += DateTextBox_KeyPress;
+            Label lblEndDate = new Label { Text = "End Date:", Location = new System.Drawing.Point(510, 25), AutoSize = true };
+            DateTimePicker dtpEndDate = new DateTimePicker { Name = "dtpEndDate", Location = new System.Drawing.Point(510, 50), Width = 200, Format = DateTimePickerFormat.Short };
 
             Button btnGenerate = new Button 
             { 
@@ -537,14 +535,8 @@ namespace TimeTracker
                 }
 
                 Location selectedLocation = (Location)cmbInvoiceLocation.SelectedItem;
-                string startDate = txtStartDate.Text.Trim();
-                string endDate = txtEndDate.Text.Trim();
-
-                if (string.IsNullOrWhiteSpace(startDate) || string.IsNullOrWhiteSpace(endDate))
-                {
-                    MessageBox.Show("Please enter both start and end dates.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                string startDate = dtpStartDate.Value.ToString("MM/dd/yyyy");
+                string endDate = dtpEndDate.Value.ToString("MM/dd/yyyy");
 
                 GenerateInvoice(selectedLocation, startDate, endDate);
             };
@@ -557,14 +549,8 @@ namespace TimeTracker
             };
             btnGenerateAll.Click += (s, e) =>
             {
-                string startDate = txtStartDate.Text.Trim();
-                string endDate = txtEndDate.Text.Trim();
-
-                if (string.IsNullOrWhiteSpace(startDate) || string.IsNullOrWhiteSpace(endDate))
-                {
-                    MessageBox.Show("Please enter both start and end dates.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                string startDate = dtpStartDate.Value.ToString("MM/dd/yyyy");
+                string endDate = dtpEndDate.Value.ToString("MM/dd/yyyy");
 
                 foreach (var location in locations)
                 {
@@ -573,8 +559,8 @@ namespace TimeTracker
             };
 
             filterGroup.Controls.AddRange(new Control[] { 
-                lblInvoiceLocation, cmbInvoiceLocation, lblStartDate, txtStartDate, 
-                lblEndDate, txtEndDate, btnGenerate, btnGenerateAll 
+                lblInvoiceLocation, cmbInvoiceLocation, lblStartDate, dtpStartDate, 
+                lblEndDate, dtpEndDate, btnGenerate, btnGenerateAll 
             });
             panel.Controls.Add(filterGroup);
 
