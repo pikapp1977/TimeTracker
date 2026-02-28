@@ -18,9 +18,7 @@ namespace TimeTracker
 
         public MainForm()
         {
-            string appDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TimeTracker");
-            if (!Directory.Exists(appDir))
-                Directory.CreateDirectory(appDir);
+            string appDir = AppDomain.CurrentDomain.BaseDirectory;
             dbPath = Path.Combine(appDir, "timetracker.db");
             locations = new List<Location>();
             timeEntries = new List<TimeEntry>();
