@@ -26,8 +26,8 @@ namespace TimeTracker
                 using var testConn = new SqliteConnection($"Data Source={tryDbPath}");
                 testConn.Open();
                 using var cmd = testConn.CreateCommand();
-                cmd.CommandText = "SELECT 1";
-                cmd.ExecuteScalar();
+                cmd.CommandText = "CREATE TABLE IF NOT EXISTS _write_test (id INTEGER)";
+                cmd.ExecuteNonQuery();
                 dbPath = tryDbPath;
             }
             catch
@@ -822,9 +822,8 @@ namespace TimeTracker
             connection.Open();
             var command = connection.CreateCommand();
             command.CommandText = @"
-                UPDATE BusinessSettings 
-                SET BusinessName = $name, BusinessAddress = $address, BusinessCity = $city, BusinessState = $state, BusinessZip = $zip, BusinessPhone = $phone, BusinessEmail = $email
-                WHERE Id = 1";
+                INSERT OR REPLACE INTO BusinessSettings (Id, BusinessName, BusinessAddress, BusinessCity, BusinessState, BusinessZip, BusinessPhone, BusinessEmail)
+                VALUES (1, $name, $address, $city, $state, $zip, $phone, $email)";
             command.Parameters.AddWithValue("$name", businessSettings.BusinessName);
             command.Parameters.AddWithValue("$address", businessSettings.BusinessAddress);
             command.Parameters.AddWithValue("$city", businessSettings.BusinessCity);
