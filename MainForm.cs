@@ -533,8 +533,8 @@ namespace TimeTracker
             Label lblStartDate = new Label { Text = "Start Date:", Location = new System.Drawing.Point(340, 25), AutoSize = true };
             DateTimePicker dtpStartDate = new DateTimePicker { Name = "dtpStartDate", Location = new System.Drawing.Point(340, 50), Width = 200, Format = DateTimePickerFormat.Short };
 
-            Label lblEndDate = new Label { Text = "End Date:", Location = new System.Drawing.Point(510, 25), AutoSize = true };
-            DateTimePicker dtpEndDate = new DateTimePicker { Name = "dtpEndDate", Location = new System.Drawing.Point(510, 50), Width = 200, Format = DateTimePickerFormat.Short };
+            Label lblEndDate = new Label { Text = "End Date:", Location = new System.Drawing.Point(560, 25), AutoSize = true };
+            DateTimePicker dtpEndDate = new DateTimePicker { Name = "dtpEndDate", Location = new System.Drawing.Point(560, 50), Width = 200, Format = DateTimePickerFormat.Short };
 
             Button btnGenerate = new Button 
             { 
