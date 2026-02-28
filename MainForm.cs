@@ -19,7 +19,25 @@ namespace TimeTracker
         public MainForm()
         {
             string appDir = AppDomain.CurrentDomain.BaseDirectory;
-            dbPath = Path.Combine(appDir, "timetracker.db");
+            string tryDbPath = Path.Combine(appDir, "timetracker.db");
+            
+            try
+            {
+                using var testConn = new SqliteConnection($"Data Source={tryDbPath}");
+                testConn.Open();
+                using var cmd = testConn.CreateCommand();
+                cmd.CommandText = "SELECT 1";
+                cmd.ExecuteScalar();
+                dbPath = tryDbPath;
+            }
+            catch
+            {
+                string localAppDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TimeTracker");
+                if (!Directory.Exists(localAppDir))
+                    Directory.CreateDirectory(localAppDir);
+                dbPath = Path.Combine(localAppDir, "timetracker.db");
+            }
+            
             locations = new List<Location>();
             timeEntries = new List<TimeEntry>();
             businessSettings = new BusinessSettings();
