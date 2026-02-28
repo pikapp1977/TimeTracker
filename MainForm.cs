@@ -710,6 +710,24 @@ namespace TimeTracker
             });
             panel.Controls.Add(infoGroup);
 
+            GroupBox dbGroup = new GroupBox 
+            { 
+                Text = "Database Location", 
+                Location = new System.Drawing.Point(10, 400), 
+                Size = new System.Drawing.Size(500, 70) 
+            };
+
+            Label lblDbPath = new Label 
+            { 
+                Text = dbPath, 
+                Location = new System.Drawing.Point(15, 25), 
+                Width = 470,
+                ForeColor = System.Drawing.Color.Blue
+            };
+
+            dbGroup.Controls.Add(lblDbPath);
+            panel.Controls.Add(dbGroup);
+
             return panel;
         }
 
