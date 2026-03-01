@@ -986,6 +986,8 @@ namespace TimeTracker
                                             item.SubItems.Add($"${loc.PayRate:F2} ({loc.PayRateType})");
                                             lst.Items.Add(item);
                                         }
+                                        lst.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                                        lst.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
                                     }
                                 }
                             }
