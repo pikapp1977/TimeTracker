@@ -1316,6 +1316,7 @@ namespace TimeTracker
                 worksheet.Range("A21:D21").Style.Font.Bold = true;
                 worksheet.Range("A21:D21").Style.Fill.BackgroundColor = XLColor.LightGray;
                 worksheet.Range("A21:D21").Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+                worksheet.Range("A21:D21").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
                 decimal total = 0;
                 int row = 22;
