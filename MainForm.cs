@@ -1316,18 +1316,16 @@ namespace TimeTracker
                 worksheet.Cell("A16").Value = "Date";
                 worksheet.Cell("B16").Value = "Description";
                 worksheet.Cell("C16").Value = "Quantity";
-                worksheet.Cell("D16").Value = "Unit Price";
-                worksheet.Cell("E16").Value = "Amount";
-                worksheet.Range("A16:E16").Style.Font.Bold = true;
-                worksheet.Range("A16:E16").Style.Fill.BackgroundColor = XLColor.LightGray;
-                worksheet.Range("A16:E16").Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+                worksheet.Cell("D16").Value = "Amount";
+                worksheet.Range("A16:D16").Style.Font.Bold = true;
+                worksheet.Range("A16:D16").Style.Fill.BackgroundColor = XLColor.LightGray;
+                worksheet.Range("A16:D16").Style.Border.BottomBorder = XLBorderStyleValues.Thin;
 
                 decimal total = 0;
                 int row = 17;
                 foreach (var entry in entries.OrderBy(e => e.Date))
                 {
                     double hours = CalculateHoursWorked(entry.ArrivalTime, entry.DepartureTime);
-                    decimal rate = location.PayRateType == "Per Hour" ? location.PayRate : location.PayRate / 8;
                     string description = $"Worked {hours:F2} hours ({entry.ArrivalTime} - {entry.DepartureTime})";
                     
                     worksheet.Cell($"A{row}").Value = entry.Date;
@@ -1335,33 +1333,31 @@ namespace TimeTracker
                     worksheet.Cell($"C{row}").Value = 1;
                     worksheet.Cell($"D{row}").Value = (double)entry.DailyPay;
                     worksheet.Cell($"D{row}").Style.NumberFormat.Format = "$#,##0.00";
-                    worksheet.Cell($"E{row}").Value = (double)entry.DailyPay;
-                    worksheet.Cell($"E{row}").Style.NumberFormat.Format = "$#,##0.00";
                     
                     total += entry.DailyPay;
                     row++;
                 }
 
                 row++;
-                worksheet.Cell($"D{row}").Value = "Subtotal:";
-                worksheet.Cell($"D{row}").Style.Font.Bold = true;
-                worksheet.Cell($"E{row}").Value = (double)total;
-                worksheet.Cell($"E{row}").Style.NumberFormat.Format = "$#,##0.00";
+                worksheet.Cell($"C{row}").Value = "Subtotal:";
+                worksheet.Cell($"C{row}").Style.Font.Bold = true;
+                worksheet.Cell($"D{row}").Value = (double)total;
+                worksheet.Cell($"D{row}").Style.NumberFormat.Format = "$#,##0.00";
                 
                 row++;
-                worksheet.Cell($"D{row}").Value = "Tax (0%):";
-                worksheet.Cell($"D{row}").Style.Font.Bold = true;
-                worksheet.Cell($"E{row}").Value = 0;
-                worksheet.Cell($"E{row}").Style.NumberFormat.Format = "$#,##0.00";
+                worksheet.Cell($"C{row}").Value = "Tax (0%):";
+                worksheet.Cell($"C{row}").Style.Font.Bold = true;
+                worksheet.Cell($"D{row}").Value = 0;
+                worksheet.Cell($"D{row}").Style.NumberFormat.Format = "$#,##0.00";
                 
                 row++;
-                worksheet.Cell($"D{row}").Value = "TOTAL:";
+                worksheet.Cell($"C{row}").Value = "TOTAL:";
+                worksheet.Cell($"C{row}").Style.Font.Bold = true;
+                worksheet.Cell($"C{row}").Style.Font.FontSize = 12;
+                worksheet.Cell($"D{row}").Value = (double)total;
+                worksheet.Cell($"D{row}").Style.NumberFormat.Format = "$#,##0.00";
                 worksheet.Cell($"D{row}").Style.Font.Bold = true;
                 worksheet.Cell($"D{row}").Style.Font.FontSize = 12;
-                worksheet.Cell($"E{row}").Value = (double)total;
-                worksheet.Cell($"E{row}").Style.NumberFormat.Format = "$#,##0.00";
-                worksheet.Cell($"E{row}").Style.Font.Bold = true;
-                worksheet.Cell($"E{row}").Style.Font.FontSize = 12;
 
                 if (entries.Any(e => !string.IsNullOrWhiteSpace(e.Notes)))
                 {
@@ -1377,10 +1373,9 @@ namespace TimeTracker
                 }
 
                 worksheet.Column("A").Width = 12;
-                worksheet.Column("B").Width = 40;
-                worksheet.Column("C").Width = 10;
+                worksheet.Column("B").Width = 50;
+                worksheet.Column("C").Width = 12;
                 worksheet.Column("D").Width = 15;
-                worksheet.Column("E").Width = 15;
 
                 workbook.SaveAs(saveDialog.FileName);
                 MessageBox.Show($"Invoice saved to:\n{saveDialog.FileName}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
