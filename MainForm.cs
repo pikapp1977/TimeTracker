@@ -265,13 +265,13 @@ namespace TimeTracker
             { 
                 Name = "lstLocations",
                 Location = new System.Drawing.Point(10, 25), 
-                Size = new System.Drawing.Size(450, 450),
+                Size = new System.Drawing.Size(540, 450),
                 View = View.Details,
                 FullRowSelect = true,
                 GridLines = true,
                 Font = new System.Drawing.Font("Segoe UI", 11)
             };
-            lstLocations.Columns.Add("Facility", 180);
+            lstLocations.Columns.Add("Facility", 280);
             lstLocations.Columns.Add("Contact", 120);
             lstLocations.Columns.Add("Phone", 120);
             lstLocations.Columns.Add("Pay Rate", 120);
