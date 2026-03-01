@@ -3,7 +3,7 @@
 ; Download: https://jrsoftware.org/isdl.php
 
 #define MyAppName "Time Tracker"
-#define MyAppVersion "1.0.38"
+#define MyAppVersion "1.0.39"
 #define MyAppPublisher "Personal"
 #define MyAppExeName "TimeTracker.exe"
 

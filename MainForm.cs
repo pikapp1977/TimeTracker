@@ -1255,7 +1255,7 @@ namespace TimeTracker
             SaveFileDialog saveDialog = new SaveFileDialog
             {
                 Filter = "Excel Files|*.xlsx",
-                FileName = $"Invoice_{location.FacilityName}_{startDate.Replace("/", "-")}_to_{endDate.Replace("/", "-")}.xlsx"
+                FileName = "MDAnesthesia_" + location.FacilityName.Replace(" ", "_") + "_" + DateTime.Now.ToString("MMddyyyy") + ".xlsx"
             };
 
             if (saveDialog.ShowDialog() != DialogResult.OK)
