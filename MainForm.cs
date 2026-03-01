@@ -441,25 +441,25 @@ namespace TimeTracker
             { 
                 Text = "Time Entries", 
                 Location = new System.Drawing.Point(10, 200), 
-                Size = new System.Drawing.Size(920, 370) 
+                Size = new System.Drawing.Size(1180, 370) 
             };
 
             ListView lstEntries = new ListView 
             { 
                 Name = "lstTimeEntries",
                 Location = new System.Drawing.Point(10, 25), 
-                Size = new System.Drawing.Size(900, 280),
+                Size = new System.Drawing.Size(1160, 280),
                 View = View.Details,
                 FullRowSelect = true,
                 GridLines = true
             };
-            lstEntries.Columns.Add("Date", 100);
-            lstEntries.Columns.Add("Location", 180);
-            lstEntries.Columns.Add("Arrival", 100);
-            lstEntries.Columns.Add("Departure", 100);
-            lstEntries.Columns.Add("Hours", 80);
-            lstEntries.Columns.Add("Daily Pay", 100);
-            lstEntries.Columns.Add("Notes", 200);
+            lstEntries.Columns.Add("Date", 120);
+            lstEntries.Columns.Add("Location", 250);
+            lstEntries.Columns.Add("Arrival", 120);
+            lstEntries.Columns.Add("Departure", 120);
+            lstEntries.Columns.Add("Hours", 100);
+            lstEntries.Columns.Add("Daily Pay", 120);
+            lstEntries.Columns.Add("Notes", 300);
 
             Button btnDeleteEntry = new Button 
             { 
