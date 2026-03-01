@@ -258,14 +258,14 @@ namespace TimeTracker
             { 
                 Text = "Locations List", 
                 Location = new System.Drawing.Point(520, 10), 
-                Size = new System.Drawing.Size(1050, 660) 
+                Size = new System.Drawing.Size(1060, 660) 
             };
 
             ListView lstLocations = new ListView 
             { 
                 Name = "lstLocations",
                 Location = new System.Drawing.Point(10, 25), 
-                Size = new System.Drawing.Size(540, 450),
+                Size = new System.Drawing.Size(1020, 450),
                 View = View.Details,
                 FullRowSelect = true,
                 GridLines = true,
