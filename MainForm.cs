@@ -1310,8 +1310,8 @@ namespace TimeTracker
                 worksheet.Cell("B18").Value = startDate + " to " + endDate;
 
                 worksheet.Cell("A21").Value = "Date";
-                worksheet.Cell("B15").Value = "Description";
-                worksheet.Cell("C15").Value = "Quantity";
+                worksheet.Cell("B21").Value = "Description";
+                worksheet.Cell("C21").Value = "Quantity";
                 worksheet.Cell("D21").Value = "Amount";
                 worksheet.Range("A21:D21").Style.Font.Bold = true;
                 worksheet.Range("A21:D21").Style.Fill.BackgroundColor = XLColor.LightGray;
