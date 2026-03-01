@@ -19,17 +19,63 @@ namespace TimeTracker
         public MainForm()
         {
             string appDir = AppDomain.CurrentDomain.BaseDirectory;
-            string tryDbPath = Path.Combine(appDir, "timetracker.db");
+            string installDbPath = Path.Combine(appDir, "timetracker.db");
+            string appDataDbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TimeTracker", "timetracker.db");
             
-            try
+            if (File.Exists(installDbPath))
             {
-                using var testConn = new SqliteConnection($"Data Source={tryDbPath}");
-                testConn.Open();
-                using var cmd = testConn.CreateCommand();
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS _write_test (id INTEGER)";
-                cmd.ExecuteNonQuery();
-                dbPath = tryDbPath;
+                try
+                {
+                    using var testConn = new SqliteConnection($"Data Source={installDbPath}");
+                    testConn.Open();
+                    using var cmd = testConn.CreateCommand();
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS _write_test (id INTEGER)";
+                    cmd.ExecuteNonQuery();
+                    dbPath = installDbPath;
+                }
+                catch
+                {
+                    string appDataDir = Path.GetDirectoryName(appDataDbPath);
+                    if (!Directory.Exists(appDataDir))
+                        Directory.CreateDirectory(appDataDir);
+                    dbPath = appDataDbPath;
+                }
             }
+            else if (File.Exists(appDataDbPath))
+            {
+                dbPath = appDataDbPath;
+            }
+            else
+            {
+                try
+                {
+                    using var testConn = new SqliteConnection($"Data Source={installDbPath}");
+                    testConn.Open();
+                    using var cmd = testConn.CreateCommand();
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS _write_test (id INTEGER)";
+                    cmd.ExecuteNonQuery();
+                    dbPath = installDbPath;
+                }
+                catch
+                {
+                    string appDataDir = Path.GetDirectoryName(appDataDbPath);
+                    if (!Directory.Exists(appDataDir))
+                        Directory.CreateDirectory(appDataDir);
+                    dbPath = appDataDbPath;
+                }
+            }
+            
+            locations = new List<Location>();
+            timeEntries = new List<TimeEntry>();
+            businessSettings = new BusinessSettings();
+            InitializeComponent();
+            InitializeDatabase();
+            LoadLocations();
+            LoadTimeEntries();
+            LoadBusinessSettings();
+            RefreshTimeEntriesList();
+            UpdateTotals();
+        }
             catch
             {
                 string localAppDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TimeTracker");
