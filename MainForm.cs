@@ -31,6 +31,7 @@ namespace TimeTracker
             LoadLocations();
             LoadTimeEntries();
             LoadBusinessSettings();
+            RefreshLocationsList();
             RefreshTimeEntriesList();
             UpdateTotals();
         }
