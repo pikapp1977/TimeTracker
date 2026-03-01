@@ -1269,7 +1269,7 @@ namespace TimeTracker
                 worksheet.Cell("A1").Value = "INVOICE";
                 worksheet.Cell("A1").Style.Font.FontSize = 24;
                 worksheet.Cell("A1").Style.Font.Bold = true;
-                worksheet.Range("A1:F1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell("A1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
 
                 worksheet.Cell("A3").Value = "From:";
                 worksheet.Cell("A3").Style.Font.Bold = true;
@@ -1308,21 +1308,19 @@ namespace TimeTracker
                 worksheet.Cell("B10").Value = "1";
                 worksheet.Cell("A11").Value = "Invoice Date:";
                 worksheet.Cell("B11").Value = DateTime.Now.ToString("MM/dd/yyyy");
-                worksheet.Cell("A12").Value = "Due Date:";
-                worksheet.Cell("B12").Value = DateTime.Now.AddDays(30).ToString("MM/dd/yyyy");
-                worksheet.Cell("A13").Value = "Period:";
-                worksheet.Cell("B13").Value = $"{startDate} to {endDate}";
+                worksheet.Cell("A12").Value = "Period:";
+                worksheet.Cell("B12").Value = startDate + " to " + endDate;
 
-                worksheet.Cell("A16").Value = "Date";
-                worksheet.Cell("B16").Value = "Description";
-                worksheet.Cell("C16").Value = "Quantity";
-                worksheet.Cell("D16").Value = "Amount";
-                worksheet.Range("A16:D16").Style.Font.Bold = true;
-                worksheet.Range("A16:D16").Style.Fill.BackgroundColor = XLColor.LightGray;
-                worksheet.Range("A16:D16").Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+                worksheet.Cell("A15").Value = "Date";
+                worksheet.Cell("B15").Value = "Description";
+                worksheet.Cell("C15").Value = "Quantity";
+                worksheet.Cell("D15").Value = "Amount";
+                worksheet.Range("A15:D15").Style.Font.Bold = true;
+                worksheet.Range("A15:D15").Style.Fill.BackgroundColor = XLColor.LightGray;
+                worksheet.Range("A15:D15").Style.Border.BottomBorder = XLBorderStyleValues.Thin;
 
                 decimal total = 0;
-                int row = 17;
+                int row = 16;
                 foreach (var entry in entries.OrderBy(e => e.Date))
                 {
                     double hours = CalculateHoursWorked(entry.ArrivalTime, entry.DepartureTime);
