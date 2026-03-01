@@ -115,7 +115,7 @@ namespace TimeTracker
             // 
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
-            this.tabControl.Size = new System.Drawing.Size(1100, 700);
+            this.tabControl.Size = new System.Drawing.Size(1280, 700);
             this.tabControl.TabIndex = 0;
             // 
             // Locations Tab
@@ -146,7 +146,7 @@ namespace TimeTracker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1124, 724);
+            this.ClientSize = new System.Drawing.Size(1300, 724);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -258,7 +258,7 @@ namespace TimeTracker
             { 
                 Text = "Locations List", 
                 Location = new System.Drawing.Point(520, 10), 
-                Size = new System.Drawing.Size(560, 660) 
+                Size = new System.Drawing.Size(740, 660) 
             };
 
             ListView lstLocations = new ListView 
