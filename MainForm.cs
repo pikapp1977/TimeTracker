@@ -1339,18 +1339,6 @@ namespace TimeTracker
                 }
 
                 row++;
-                worksheet.Cell($"C{row}").Value = "Subtotal:";
-                worksheet.Cell($"C{row}").Style.Font.Bold = true;
-                worksheet.Cell($"D{row}").Value = (double)total;
-                worksheet.Cell($"D{row}").Style.NumberFormat.Format = "$#,##0.00";
-                
-                row++;
-                worksheet.Cell($"C{row}").Value = "Tax (0%):";
-                worksheet.Cell($"C{row}").Style.Font.Bold = true;
-                worksheet.Cell($"D{row}").Value = 0;
-                worksheet.Cell($"D{row}").Style.NumberFormat.Format = "$#,##0.00";
-                
-                row++;
                 worksheet.Cell($"C{row}").Value = "TOTAL:";
                 worksheet.Cell($"C{row}").Style.Font.Bold = true;
                 worksheet.Cell($"C{row}").Style.Font.FontSize = 12;
