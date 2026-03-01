@@ -495,7 +495,7 @@ namespace TimeTracker
             { 
                 Text = "Archive/Unarchive", 
                 Location = new System.Drawing.Point(120, 315), 
-                Size = new System.Drawing.Size(130, 30) 
+                Size = new System.Drawing.Size(150, 30) 
             };
             btnArchive.Click += (s, e) =>
             {
@@ -513,7 +513,7 @@ namespace TimeTracker
             Button btnDeleteEntry = new Button 
             { 
                 Text = "Delete Selected", 
-                Location = new System.Drawing.Point(260, 315), 
+                Location = new System.Drawing.Point(280, 315), 
                 Size = new System.Drawing.Size(120, 30) 
             };
             btnDeleteEntry.Click += (s, e) =>
@@ -533,7 +533,7 @@ namespace TimeTracker
             { 
                 Name = "btnClearAll",
                 Text = "Clear All Unlocked", 
-                Location = new System.Drawing.Point(390, 315), 
+                Location = new System.Drawing.Point(410, 315), 
                 Size = new System.Drawing.Size(140, 30),
                 Visible = businessSettings.ShowClearAllButton
             };
@@ -553,7 +553,7 @@ namespace TimeTracker
             {
                 Name = "chkShowArchived",
                 Text = "Show Archived",
-                Location = new System.Drawing.Point(540, 318),
+                Location = new System.Drawing.Point(560, 318),
                 Width = 150,
                 Checked = false
             };
