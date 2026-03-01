@@ -3,3 +3,5 @@ obj/
 *.db
 .DS_Store
 TimeTrackerSetup.exe
+publish/
+installer/

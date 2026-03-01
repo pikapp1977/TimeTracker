@@ -38,6 +38,7 @@ namespace TimeTracker
             RefreshTimeEntriesList();
             RefreshSettingsPanel();
             UpdateTotals();
+            UpdateClearAllButtonVisibility();
         }
 
         private void InitializeDatabase()
@@ -83,6 +84,12 @@ namespace TimeTracker
                 )";
             command.ExecuteNonQuery();
 
+            command.CommandText = "ALTER TABLE TimeEntries ADD COLUMN Locked INTEGER DEFAULT 0";
+            try { command.ExecuteNonQuery(); } catch { }
+
+            command.CommandText = "ALTER TABLE TimeEntries ADD COLUMN Archived INTEGER DEFAULT 0";
+            try { command.ExecuteNonQuery(); } catch { }
+
             command.CommandText = @"
                 CREATE TABLE IF NOT EXISTS BusinessSettings (
                     Id INTEGER PRIMARY KEY CHECK (Id = 1),
@@ -106,6 +113,9 @@ namespace TimeTracker
             try { command.ExecuteNonQuery(); } catch { }
 
             command.CommandText = "INSERT OR IGNORE INTO BusinessSettings (Id) VALUES (1)";
+            try { command.ExecuteNonQuery(); } catch { }
+
+            command.CommandText = "ALTER TABLE BusinessSettings ADD COLUMN ShowClearAllButton INTEGER DEFAULT 0";
             try { command.ExecuteNonQuery(); } catch { }
         }
 
@@ -453,18 +463,57 @@ namespace TimeTracker
                 FullRowSelect = true,
                 GridLines = true
             };
-            lstEntries.Columns.Add("Date", 120);
-            lstEntries.Columns.Add("Location", 250);
-            lstEntries.Columns.Add("Arrival", 120);
-            lstEntries.Columns.Add("Departure", 120);
-            lstEntries.Columns.Add("Hours", 100);
-            lstEntries.Columns.Add("Daily Pay", 120);
-            lstEntries.Columns.Add("Notes", 300);
+            lstEntries.Columns.Add("Date", 200);
+            lstEntries.Columns.Add("Location", 450);
+            lstEntries.Columns.Add("Arrival", 180);
+            lstEntries.Columns.Add("Departure", 180);
+            lstEntries.Columns.Add("Hours", 140);
+            lstEntries.Columns.Add("Daily Pay", 150);
+            lstEntries.Columns.Add("Notes", -2);
+            lstEntries.Columns.Add("Locked", -2);
+            lstEntries.Columns.Add("Archived", -2);
+
+            Button btnToggleLock = new Button 
+            { 
+                Text = "Lock/Unlock", 
+                Location = new System.Drawing.Point(10, 315), 
+                Size = new System.Drawing.Size(100, 30) 
+            };
+            btnToggleLock.Click += (s, e) =>
+            {
+                if (lstEntries.SelectedItems.Count > 0)
+                {
+                    var item = lstEntries.SelectedItems[0];
+                    int id = (int)item.Tag;
+                    ToggleTimeEntryLock(id);
+                    LoadTimeEntries();
+                    RefreshTimeEntriesList();
+                }
+            };
+
+            Button btnArchive = new Button 
+            { 
+                Text = "Archive/Unarchive", 
+                Location = new System.Drawing.Point(120, 315), 
+                Size = new System.Drawing.Size(130, 30) 
+            };
+            btnArchive.Click += (s, e) =>
+            {
+                if (lstEntries.SelectedItems.Count > 0)
+                {
+                    var item = lstEntries.SelectedItems[0];
+                    int id = (int)item.Tag;
+                    ToggleTimeEntryArchive(id);
+                    LoadTimeEntries();
+                    RefreshTimeEntriesList();
+                    UpdateTotals();
+                }
+            };
 
             Button btnDeleteEntry = new Button 
             { 
                 Text = "Delete Selected", 
-                Location = new System.Drawing.Point(10, 315), 
+                Location = new System.Drawing.Point(260, 315), 
                 Size = new System.Drawing.Size(120, 30) 
             };
             btnDeleteEntry.Click += (s, e) =>
@@ -482,13 +531,15 @@ namespace TimeTracker
 
             Button btnClearAll = new Button 
             { 
-                Text = "Clear All Entries", 
-                Location = new System.Drawing.Point(140, 315), 
-                Size = new System.Drawing.Size(130, 30) 
+                Name = "btnClearAll",
+                Text = "Clear All Unlocked", 
+                Location = new System.Drawing.Point(390, 315), 
+                Size = new System.Drawing.Size(140, 30),
+                Visible = businessSettings.ShowClearAllButton
             };
             btnClearAll.Click += (s, e) =>
             {
-                var result = MessageBox.Show("Are you sure you want to delete all time entries?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var result = MessageBox.Show("Are you sure you want to delete all unlocked time entries? Locked entries will be preserved.", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
                 {
                     ClearAllTimeEntries();
@@ -498,9 +549,27 @@ namespace TimeTracker
                 }
             };
 
+            CheckBox chkShowArchived = new CheckBox
+            {
+                Name = "chkShowArchived",
+                Text = "Show Archived",
+                Location = new System.Drawing.Point(540, 318),
+                Width = 150,
+                Checked = false
+            };
+            chkShowArchived.CheckedChanged += (s, e) =>
+            {
+                LoadTimeEntries();
+                RefreshTimeEntriesList();
+                UpdateTotals();
+            };
+
             listGroup.Controls.Add(lstEntries);
+            listGroup.Controls.Add(btnToggleLock);
+            listGroup.Controls.Add(btnArchive);
             listGroup.Controls.Add(btnDeleteEntry);
             listGroup.Controls.Add(btnClearAll);
+            listGroup.Controls.Add(chkShowArchived);
             panel.Controls.Add(listGroup);
 
             return panel;
@@ -685,10 +754,19 @@ namespace TimeTracker
                 Text = businessSettings.BusinessEmail
             };
 
+            CheckBox chkShowClearAll = new CheckBox
+            {
+                Name = "chkShowClearAll",
+                Text = "Show 'Clear All Unlocked' button in Time Entry tab",
+                Location = new System.Drawing.Point(20, 260),
+                Width = 400,
+                Checked = businessSettings.ShowClearAllButton
+            };
+
             Button btnSaveSettings = new Button 
             { 
                 Text = "Save Settings", 
-                Location = new System.Drawing.Point(20, 260), 
+                Location = new System.Drawing.Point(20, 295), 
                 Size = new System.Drawing.Size(120, 35) 
             };
             btnSaveSettings.Click += (s, e) =>
@@ -700,9 +778,11 @@ namespace TimeTracker
                 businessSettings.BusinessZip = txtBusinessZip.Text.Trim();
                 businessSettings.BusinessPhone = txtBusinessPhone.Text.Trim();
                 businessSettings.BusinessEmail = txtBusinessEmail.Text.Trim();
+                businessSettings.ShowClearAllButton = chkShowClearAll.Checked;
                 
                 SaveBusinessSettings();
-                MessageBox.Show("Settings saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                UpdateClearAllButtonVisibility();
+                MessageBox.Show("Settings saved successfully! The button visibility has been updated.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             };
 
             infoGroup.Controls.AddRange(new Control[] { 
@@ -713,6 +793,7 @@ namespace TimeTracker
                 lblBusinessZip, txtBusinessZip,
                 lblBusinessPhone, txtBusinessPhone,
                 lblBusinessEmail, txtBusinessEmail,
+                chkShowClearAll,
                 btnSaveSettings 
             });
             panel.Controls.Add(infoGroup);
@@ -824,7 +905,7 @@ namespace TimeTracker
             using var connection = new SqliteConnection($"Data Source={dbPath}");
             connection.Open();
             var command = connection.CreateCommand();
-            command.CommandText = "SELECT BusinessName, BusinessAddress, BusinessCity, BusinessState, BusinessZip, BusinessPhone, BusinessEmail FROM BusinessSettings WHERE Id = 1";
+            command.CommandText = "SELECT BusinessName, BusinessAddress, BusinessCity, BusinessState, BusinessZip, BusinessPhone, BusinessEmail, ShowClearAllButton FROM BusinessSettings WHERE Id = 1";
             using var reader = command.ExecuteReader();
             if (reader.Read())
             {
@@ -836,7 +917,8 @@ namespace TimeTracker
                     BusinessState = reader.IsDBNull(3) ? "" : reader.GetString(3),
                     BusinessZip = reader.IsDBNull(4) ? "" : reader.GetString(4),
                     BusinessPhone = reader.IsDBNull(5) ? "" : reader.GetString(5),
-                    BusinessEmail = reader.IsDBNull(6) ? "" : reader.GetString(6)
+                    BusinessEmail = reader.IsDBNull(6) ? "" : reader.GetString(6),
+                    ShowClearAllButton = !reader.IsDBNull(7) && reader.GetInt32(7) == 1
                 };
             }
         }
@@ -847,8 +929,8 @@ namespace TimeTracker
             connection.Open();
             var command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT OR REPLACE INTO BusinessSettings (Id, BusinessName, BusinessAddress, BusinessCity, BusinessState, BusinessZip, BusinessPhone, BusinessEmail)
-                VALUES (1, $name, $address, $city, $state, $zip, $phone, $email)";
+                INSERT OR REPLACE INTO BusinessSettings (Id, BusinessName, BusinessAddress, BusinessCity, BusinessState, BusinessZip, BusinessPhone, BusinessEmail, ShowClearAllButton)
+                VALUES (1, $name, $address, $city, $state, $zip, $phone, $email, $showClearAll)";
             command.Parameters.AddWithValue("$name", businessSettings.BusinessName);
             command.Parameters.AddWithValue("$address", businessSettings.BusinessAddress);
             command.Parameters.AddWithValue("$city", businessSettings.BusinessCity);
@@ -856,6 +938,7 @@ namespace TimeTracker
             command.Parameters.AddWithValue("$zip", businessSettings.BusinessZip);
             command.Parameters.AddWithValue("$phone", businessSettings.BusinessPhone);
             command.Parameters.AddWithValue("$email", businessSettings.BusinessEmail);
+            command.Parameters.AddWithValue("$showClearAll", businessSettings.ShowClearAllButton ? 1 : 0);
             command.ExecuteNonQuery();
         }
 
@@ -1045,8 +1128,8 @@ namespace TimeTracker
             connection.Open();
             var command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT INTO TimeEntries (LocationId, Date, ArrivalTime, DepartureTime, DailyPay, Notes)
-                VALUES ($locationId, $date, $arrivalTime, $departureTime, $dailyPay, $notes)";
+                INSERT INTO TimeEntries (LocationId, Date, ArrivalTime, DepartureTime, DailyPay, Notes, Locked, Archived)
+                VALUES ($locationId, $date, $arrivalTime, $departureTime, $dailyPay, $notes, 0, 0)";
             command.Parameters.AddWithValue("$locationId", locationId);
             command.Parameters.AddWithValue("$date", date);
             command.Parameters.AddWithValue("$arrivalTime", arrivalTime);
@@ -1056,16 +1139,48 @@ namespace TimeTracker
             command.ExecuteNonQuery();
         }
 
+        private bool GetShowArchivedCheckboxState()
+        {
+            foreach (TabPage tab in tabControl.TabPages)
+            {
+                foreach (Control ctrl in tab.Controls)
+                {
+                    if (ctrl is Panel panel)
+                    {
+                        foreach (Control grp in panel.Controls)
+                        {
+                            if (grp is GroupBox groupBox && groupBox.Text == "Time Entries")
+                            {
+                                foreach (Control chkCtrl in groupBox.Controls)
+                                {
+                                    if (chkCtrl is CheckBox chk && chk.Name == "chkShowArchived")
+                                    {
+                                        return chk.Checked;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false; // Default to not showing archived
+        }
+
         private void LoadTimeEntries()
         {
             timeEntries.Clear();
             using var connection = new SqliteConnection($"Data Source={dbPath}");
             connection.Open();
             var command = connection.CreateCommand();
-            command.CommandText = @"
-                SELECT t.Id, t.LocationId, l.FacilityName, t.Date, t.ArrivalTime, t.DepartureTime, t.DailyPay, t.Notes
+            
+            bool showArchived = GetShowArchivedCheckboxState();
+            string whereClause = showArchived ? "" : "WHERE (t.Archived = 0 OR t.Archived IS NULL)";
+            
+            command.CommandText = $@"
+                SELECT t.Id, t.LocationId, l.FacilityName, t.Date, t.ArrivalTime, t.DepartureTime, t.DailyPay, t.Notes, t.Locked, t.Archived
                 FROM TimeEntries t
                 JOIN Locations l ON t.LocationId = l.Id
+                {whereClause}
                 ORDER BY t.Date DESC";
             using var reader = command.ExecuteReader();
             while (reader.Read())
@@ -1079,7 +1194,9 @@ namespace TimeTracker
                     ArrivalTime = reader.GetString(4),
                     DepartureTime = reader.GetString(5),
                     DailyPay = (decimal)reader.GetDouble(6),
-                    Notes = reader.IsDBNull(7) ? "" : reader.GetString(7)
+                    Notes = reader.IsDBNull(7) ? "" : reader.GetString(7),
+                    Locked = !reader.IsDBNull(8) && reader.GetInt32(8) == 1,
+                    Archived = !reader.IsDBNull(9) && reader.GetInt32(9) == 1
                 });
             }
         }
@@ -1089,8 +1206,19 @@ namespace TimeTracker
             using var connection = new SqliteConnection($"Data Source={dbPath}");
             connection.Open();
             var command = connection.CreateCommand();
-            command.CommandText = "DELETE FROM TimeEntries WHERE Id = $id";
+            
+            // Check if entry is locked
+            command.CommandText = "SELECT Locked FROM TimeEntries WHERE Id = $id";
             command.Parameters.AddWithValue("$id", id);
+            var result = command.ExecuteScalar();
+            
+            if (result != null && Convert.ToInt32(result) == 1)
+            {
+                MessageBox.Show("This entry is locked and cannot be deleted. Unlock it first.", "Cannot Delete", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            
+            command.CommandText = "DELETE FROM TimeEntries WHERE Id = $id";
             command.ExecuteNonQuery();
         }
 
@@ -1099,8 +1227,89 @@ namespace TimeTracker
             using var connection = new SqliteConnection($"Data Source={dbPath}");
             connection.Open();
             var command = connection.CreateCommand();
-            command.CommandText = "DELETE FROM TimeEntries";
+            command.CommandText = "DELETE FROM TimeEntries WHERE Locked = 0 OR Locked IS NULL";
             command.ExecuteNonQuery();
+        }
+
+        private void ToggleTimeEntryLock(int id)
+        {
+            using var connection = new SqliteConnection($"Data Source={dbPath}");
+            connection.Open();
+            var command = connection.CreateCommand();
+            
+            // Get current lock status
+            command.CommandText = "SELECT Locked FROM TimeEntries WHERE Id = $id";
+            command.Parameters.AddWithValue("$id", id);
+            var result = command.ExecuteScalar();
+            int currentLock = result != null && !Convert.IsDBNull(result) ? Convert.ToInt32(result) : 0;
+            
+            // Toggle lock
+            int newLock = currentLock == 1 ? 0 : 1;
+            command.CommandText = "UPDATE TimeEntries SET Locked = $locked WHERE Id = $id";
+            command.Parameters.Clear();
+            command.Parameters.AddWithValue("$locked", newLock);
+            command.Parameters.AddWithValue("$id", id);
+            command.ExecuteNonQuery();
+        }
+
+        private void ToggleTimeEntryArchive(int id)
+        {
+            using var connection = new SqliteConnection($"Data Source={dbPath}");
+            connection.Open();
+            var command = connection.CreateCommand();
+            
+            // Get current lock and archive status
+            command.CommandText = "SELECT Locked, Archived FROM TimeEntries WHERE Id = $id";
+            command.Parameters.AddWithValue("$id", id);
+            using var reader = command.ExecuteReader();
+            
+            if (reader.Read())
+            {
+                int locked = !reader.IsDBNull(0) ? reader.GetInt32(0) : 0;
+                int archived = !reader.IsDBNull(1) ? reader.GetInt32(1) : 0;
+                reader.Close();
+                
+                // If trying to archive (not currently archived), check if locked
+                if (archived == 0 && locked == 0)
+                {
+                    MessageBox.Show("This entry must be locked before it can be archived.", "Cannot Archive", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                
+                // Toggle archive status
+                int newArchive = archived == 1 ? 0 : 1;
+                command.CommandText = "UPDATE TimeEntries SET Archived = $archived WHERE Id = $id";
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("$archived", newArchive);
+                command.Parameters.AddWithValue("$id", id);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private void UpdateClearAllButtonVisibility()
+        {
+            foreach (TabPage tab in tabControl.TabPages)
+            {
+                foreach (Control ctrl in tab.Controls)
+                {
+                    if (ctrl is Panel panel)
+                    {
+                        foreach (Control grp in panel.Controls)
+                        {
+                            if (grp is GroupBox groupBox && groupBox.Text == "Time Entries")
+                            {
+                                foreach (Control btnCtrl in groupBox.Controls)
+                                {
+                                    if (btnCtrl is Button btn && btn.Name == "btnClearAll")
+                                    {
+                                        btn.Visible = businessSettings.ShowClearAllButton;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void RefreshTimeEntriesList()
@@ -1135,9 +1344,26 @@ namespace TimeTracker
                                             item.SubItems.Add(hours.ToString("F2"));
                                             item.SubItems.Add($"${entry.DailyPay:F2}");
                                             item.SubItems.Add(entry.Notes);
+                                            item.SubItems.Add(entry.Locked ? "   🔒" : "");
+                                            item.SubItems.Add(entry.Archived ? "    📦" : "");
 
-                                            totalPay += entry.DailyPay;
-                                            totalHours += hours;
+                                            // Highlight locked entries in yellow, archived entries in gray
+                                            if (entry.Archived)
+                                            {
+                                                item.BackColor = System.Drawing.Color.LightGray;
+                                                item.ForeColor = System.Drawing.Color.DarkGray;
+                                            }
+                                            else if (entry.Locked)
+                                            {
+                                                item.BackColor = System.Drawing.Color.LightYellow;
+                                            }
+
+                                            // Only include non-archived entries in totals
+                                            if (!entry.Archived)
+                                            {
+                                                totalPay += entry.DailyPay;
+                                                totalHours += hours;
+                                            }
 
                                             lst.Items.Add(item);
                                         }
@@ -1181,6 +1407,10 @@ namespace TimeTracker
                                         else if (txt.Name == "txtBusinessZip") txt.Text = businessSettings.BusinessZip;
                                         else if (txt.Name == "txtBusinessPhone") txt.Text = businessSettings.BusinessPhone;
                                         else if (txt.Name == "txtBusinessEmail") txt.Text = businessSettings.BusinessEmail;
+                                    }
+                                    else if (txtCtrl is CheckBox chk)
+                                    {
+                                        if (chk.Name == "chkShowClearAll") chk.Checked = businessSettings.ShowClearAllButton;
                                     }
                                 }
                             }
@@ -1683,6 +1913,8 @@ namespace TimeTracker
             public string DepartureTime { get; set; }
             public decimal DailyPay { get; set; }
             public string Notes { get; set; }
+            public bool Locked { get; set; }
+            public bool Archived { get; set; }
         }
 
         private class BusinessSettings
@@ -1694,6 +1926,7 @@ namespace TimeTracker
             public string BusinessZip { get; set; }
             public string BusinessPhone { get; set; }
             public string BusinessEmail { get; set; }
+            public bool ShowClearAllButton { get; set; }
         }
     }
 }
