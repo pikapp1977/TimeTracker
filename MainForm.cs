@@ -34,14 +34,8 @@ namespace TimeTracker
             RefreshTimeEntriesList();
             UpdateTotals();
         }
-            catch
-            {
-                string localAppDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TimeTracker");
-                if (!Directory.Exists(localAppDir))
-                    Directory.CreateDirectory(localAppDir);
-                dbPath = Path.Combine(localAppDir, "timetracker.db");
-            }
-            
+
+        private void InitializeDatabase()
             locations = new List<Location>();
             timeEntries = new List<TimeEntry>();
             businessSettings = new BusinessSettings();
