@@ -36,19 +36,6 @@ namespace TimeTracker
         }
 
         private void InitializeDatabase()
-            locations = new List<Location>();
-            timeEntries = new List<TimeEntry>();
-            businessSettings = new BusinessSettings();
-            InitializeComponent();
-            InitializeDatabase();
-            LoadLocations();
-            LoadTimeEntries();
-            LoadBusinessSettings();
-            RefreshTimeEntriesList();
-            UpdateTotals();
-        }
-
-        private void InitializeDatabase()
         {
             using var connection = new SqliteConnection($"Data Source={dbPath}");
             connection.Open();
