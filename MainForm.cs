@@ -5,6 +5,9 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Data.Sqlite;
 using ClosedXML.Excel;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace TimeTracker
 {
@@ -522,6 +525,23 @@ namespace TimeTracker
 
             Label lblEndDate = new Label { Text = "End Date:", Location = new System.Drawing.Point(560, 25), AutoSize = true };
             DateTimePicker dtpEndDate = new DateTimePicker { Name = "dtpEndDate", Location = new System.Drawing.Point(560, 50), Width = 200, Format = DateTimePickerFormat.Short };
+
+            // Auto-populate end date when start date changes
+            dtpStartDate.ValueChanged += (s, e) =>
+            {
+                DateTime startDate = dtpStartDate.Value;
+                
+                if (startDate.Day == 1)
+                {
+                    // If start date is 1st of month, set end date to 15th of same month
+                    dtpEndDate.Value = new DateTime(startDate.Year, startDate.Month, 15);
+                }
+                else if (startDate.Day == 15)
+                {
+                    // If start date is 15th of month, set end date to last day of same month
+                    dtpEndDate.Value = new DateTime(startDate.Year, startDate.Month, DateTime.DaysInMonth(startDate.Year, startDate.Month));
+                }
+            };
 
             Button btnGenerate = new Button 
             { 
@@ -1411,13 +1431,152 @@ namespace TimeTracker
                 worksheet.Column(4).Width = 15;
 
                 workbook.SaveAs(saveDialog.FileName);
-                MessageBox.Show($"Invoice saved to:\n{saveDialog.FileName}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                // Generate PDF with the same filename
+                string pdfFileName = Path.ChangeExtension(saveDialog.FileName, ".pdf");
+                GenerateInvoicePDF(location, startDate, endDate, entries, total, pdfFileName);
+                
+                MessageBox.Show($"Invoice saved to:\n{saveDialog.FileName}\n\nPDF saved to:\n{pdfFileName}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 UpdateInvoicePreview(location, startDate, endDate, entries, total);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error generating invoice: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void GenerateInvoicePDF(Location location, string startDate, string endDate, List<TimeEntry> entries, decimal total, string fileName)
+        {
+            try
+            {
+                QuestPDF.Settings.License = LicenseType.Community;
+                
+                var document = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.Letter);
+                        page.Margin(50);
+                        
+                        page.Content().Column(column =>
+                        {
+                            // Invoice Title
+                            column.Item().Text("INVOICE").FontSize(24).Bold();
+                            column.Item().PaddingBottom(20);
+                            
+                            // From Section
+                            column.Item().Text("From:").Bold();
+                            string businessName = string.IsNullOrEmpty(businessSettings.BusinessName) ? "Your Company Name" : businessSettings.BusinessName;
+                            column.Item().Text(businessName).Bold();
+                            
+                            if (!string.IsNullOrEmpty(businessSettings.BusinessAddress))
+                                column.Item().Text(businessSettings.BusinessAddress);
+                            
+                            string cityStateZip = "";
+                            if (!string.IsNullOrEmpty(businessSettings.BusinessCity))
+                                cityStateZip = businessSettings.BusinessCity;
+                            if (!string.IsNullOrEmpty(businessSettings.BusinessState))
+                                cityStateZip += (cityStateZip.Length > 0 ? ", " : "") + businessSettings.BusinessState;
+                            if (!string.IsNullOrEmpty(businessSettings.BusinessZip))
+                                cityStateZip += " " + businessSettings.BusinessZip;
+                            if (!string.IsNullOrEmpty(cityStateZip))
+                                column.Item().Text(cityStateZip);
+                            
+                            if (!string.IsNullOrEmpty(businessSettings.BusinessPhone))
+                                column.Item().Text(businessSettings.BusinessPhone);
+                            if (!string.IsNullOrEmpty(businessSettings.BusinessEmail))
+                                column.Item().Text(businessSettings.BusinessEmail);
+                            
+                            column.Item().PaddingBottom(15);
+                            
+                            // Bill To Section
+                            column.Item().Text("Bill To:").Bold();
+                            column.Item().Text(location.FacilityName).Bold();
+                            
+                            if (!string.IsNullOrEmpty(location.ContactName))
+                                column.Item().Text(location.ContactName);
+                            if (!string.IsNullOrEmpty(location.Address))
+                                column.Item().Text(location.Address);
+                            
+                            string locCityStateZip = "";
+                            if (!string.IsNullOrEmpty(location.City))
+                                locCityStateZip = location.City;
+                            if (!string.IsNullOrEmpty(location.State))
+                                locCityStateZip += (locCityStateZip.Length > 0 ? ", " : "") + location.State;
+                            if (!string.IsNullOrEmpty(location.Zip))
+                                locCityStateZip += " " + location.Zip;
+                            if (!string.IsNullOrEmpty(locCityStateZip))
+                                column.Item().Text(locCityStateZip);
+                            
+                            if (!string.IsNullOrEmpty(location.ContactPhone))
+                                column.Item().Text(location.ContactPhone);
+                            if (!string.IsNullOrEmpty(location.ContactEmail))
+                                column.Item().Text(location.ContactEmail);
+                            
+                            column.Item().PaddingBottom(15);
+                            
+                            // Invoice Details
+                            column.Item().Text($"Invoice Date: {DateTime.Now:MM/dd/yyyy}");
+                            column.Item().Text($"Period: {startDate} to {endDate}");
+                            column.Item().PaddingBottom(15);
+                            
+                            // Table
+                            column.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(5);
+                                    columns.RelativeColumn(1.5f);
+                                    columns.RelativeColumn(2);
+                                });
+                                
+                                // Header
+                                table.Header(header =>
+                                {
+                                    header.Cell().Background("#CCCCCC").Padding(5).Text("Date").Bold();
+                                    header.Cell().Background("#CCCCCC").Padding(5).Text("Description").Bold();
+                                    header.Cell().Background("#CCCCCC").Padding(5).Text("Quantity").Bold();
+                                    header.Cell().Background("#CCCCCC").Padding(5).Text("Amount").Bold();
+                                });
+                                
+                                // Data rows
+                                foreach (var entry in entries.OrderBy(e => e.Date))
+                                {
+                                    double hours = CalculateHoursWorked(entry.ArrivalTime, entry.DepartureTime);
+                                    string description = $"Worked {hours:F2} hours ({entry.ArrivalTime} - {entry.DepartureTime})";
+                                    
+                                    table.Cell().BorderBottom(0.5f).Padding(5).Text(entry.Date);
+                                    table.Cell().BorderBottom(0.5f).Padding(5).Text(description);
+                                    table.Cell().BorderBottom(0.5f).Padding(5).Text("1");
+                                    table.Cell().BorderBottom(0.5f).Padding(5).Text($"${entry.DailyPay:F2}");
+                                }
+                                
+                                // Total row
+                                table.Cell().ColumnSpan(3).Padding(5).AlignRight().Text("TOTAL:").Bold().FontSize(12);
+                                table.Cell().Padding(5).Text($"${total:F2}").Bold().FontSize(12);
+                            });
+                            
+                            // Notes section
+                            if (entries.Any(e => !string.IsNullOrWhiteSpace(e.Notes)))
+                            {
+                                column.Item().PaddingTop(20);
+                                column.Item().Text("Notes:").Bold();
+                                foreach (var entry in entries.Where(e => !string.IsNullOrWhiteSpace(e.Notes)))
+                                {
+                                    column.Item().Text($"{entry.Date}: {entry.Notes}");
+                                }
+                            }
+                        });
+                    });
+                });
+                
+                document.GeneratePdf(fileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error generating PDF: {ex.Message}\n\nThe Excel file was saved successfully.", "PDF Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
