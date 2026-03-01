@@ -258,7 +258,7 @@ namespace TimeTracker
             { 
                 Text = "Locations List", 
                 Location = new System.Drawing.Point(520, 10), 
-                Size = new System.Drawing.Size(740, 660) 
+                Size = new System.Drawing.Size(840, 660) 
             };
 
             ListView lstLocations = new ListView 
