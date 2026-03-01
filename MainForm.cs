@@ -1363,12 +1363,6 @@ namespace TimeTracker
                 worksheet.Cell($"E{row}").Style.Font.Bold = true;
                 worksheet.Cell($"E{row}").Style.Font.FontSize = 12;
 
-                row += 2;
-                worksheet.Cell($"A{row}").Value = "Payment Terms:";
-                worksheet.Cell($"A{row}").Style.Font.Bold = true;
-                row++;
-                worksheet.Cell($"A{row}").Value = "Payment due within 30 days.";
-                
                 if (entries.Any(e => !string.IsNullOrWhiteSpace(e.Notes)))
                 {
                     row += 2;
