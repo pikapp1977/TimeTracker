@@ -1287,12 +1287,12 @@ namespace TimeTracker
                 worksheet.Cell("A6").Value = string.IsNullOrEmpty(businessSettings.BusinessPhone) ? "" : businessSettings.BusinessPhone;
                 worksheet.Cell("A7").Value = string.IsNullOrEmpty(businessSettings.BusinessEmail) ? "" : businessSettings.BusinessEmail;
 
-                worksheet.Cell("D3").Value = "Bill To:";
-                worksheet.Cell("D3").Style.Font.Bold = true;
-                worksheet.Cell("E3").Value = location.FacilityName;
-                worksheet.Cell("E3").Style.Font.Bold = true;
-                worksheet.Cell("E4").Value = location.ContactName;
-                worksheet.Cell("E5").Value = string.IsNullOrEmpty(location.Address) ? "" : location.Address;
+                worksheet.Cell("A9").Value = "Bill To:";
+                worksheet.Cell("A9").Style.Font.Bold = true;
+                worksheet.Cell("B9").Value = location.FacilityName;
+                worksheet.Cell("B9").Style.Font.Bold = true;
+                worksheet.Cell("B10").Value = location.ContactName;
+                worksheet.Cell("B11").Value = string.IsNullOrEmpty(location.Address) ? "" : location.Address;
                 string locCityStateZip = "";
                 if (!string.IsNullOrEmpty(location.City))
                     locCityStateZip = location.City;
@@ -1300,27 +1300,25 @@ namespace TimeTracker
                     locCityStateZip += (locCityStateZip.Length > 0 ? ", " : "") + location.State;
                 if (!string.IsNullOrEmpty(location.Zip))
                     locCityStateZip += " " + location.Zip;
-                worksheet.Cell("E6").Value = locCityStateZip;
-                worksheet.Cell("E7").Value = location.ContactPhone;
-                worksheet.Cell("E8").Value = location.ContactEmail;
+                worksheet.Cell("B12").Value = locCityStateZip;
+                worksheet.Cell("B13").Value = location.ContactPhone;
+                worksheet.Cell("B14").Value = location.ContactEmail;
 
-                worksheet.Cell("A10").Value = "Invoice #:";
-                worksheet.Cell("B10").Value = "1";
-                worksheet.Cell("A11").Value = "Invoice Date:";
-                worksheet.Cell("B11").Value = DateTime.Now.ToString("MM/dd/yyyy");
-                worksheet.Cell("A12").Value = "Period:";
-                worksheet.Cell("B12").Value = startDate + " to " + endDate;
+                worksheet.Cell("A17").Value = "Invoice Date:";
+                worksheet.Cell("B17").Value = DateTime.Now.ToString("MM/dd/yyyy");
+                worksheet.Cell("A18").Value = "Period:";
+                worksheet.Cell("B18").Value = startDate + " to " + endDate;
 
-                worksheet.Cell("A15").Value = "Date";
+                worksheet.Cell("A21").Value = "Date";
                 worksheet.Cell("B15").Value = "Description";
                 worksheet.Cell("C15").Value = "Quantity";
-                worksheet.Cell("D15").Value = "Amount";
-                worksheet.Range("A15:D15").Style.Font.Bold = true;
-                worksheet.Range("A15:D15").Style.Fill.BackgroundColor = XLColor.LightGray;
-                worksheet.Range("A15:D15").Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+                worksheet.Cell("D21").Value = "Amount";
+                worksheet.Range("A21:D21").Style.Font.Bold = true;
+                worksheet.Range("A21:D21").Style.Fill.BackgroundColor = XLColor.LightGray;
+                worksheet.Range("A21:D21").Style.Border.BottomBorder = XLBorderStyleValues.Thin;
 
                 decimal total = 0;
-                int row = 16;
+                int row = 22;
                 foreach (var entry in entries.OrderBy(e => e.Date))
                 {
                     double hours = CalculateHoursWorked(entry.ArrivalTime, entry.DepartureTime);
