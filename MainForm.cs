@@ -533,8 +533,8 @@ namespace TimeTracker
                 
                 if (startDate.Day == 1)
                 {
-                    // If start date is 1st of month, set end date to 15th of same month
-                    dtpEndDate.Value = new DateTime(startDate.Year, startDate.Month, 15);
+                    // If start date is 1st of month, set end date to 14th of same month
+                    dtpEndDate.Value = new DateTime(startDate.Year, startDate.Month, 14);
                 }
                 else if (startDate.Day == 15)
                 {
