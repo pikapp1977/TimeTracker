@@ -1327,8 +1327,10 @@ namespace TimeTracker
                     worksheet.Cell($"B{row}").Value = entry.ArrivalTime;
                     worksheet.Cell($"C{row}").Value = entry.DepartureTime;
                     worksheet.Cell($"D{row}").Value = hours;
-                    worksheet.Cell($"E{row}").Value = $"${rate:F2}";
-                    worksheet.Cell($"F{row}").Value = entry.DailyPay;
+                    worksheet.Cell($"E{row}").Value = (double)rate;
+                    worksheet.Cell($"E{row}").Style.NumberFormat.Format = "$#,##0.00";
+                    worksheet.Cell($"F{row}").Value = (double)entry.DailyPay;
+                    worksheet.Cell($"F{row}").Style.NumberFormat.Format = "$#,##0.00";
                     
                     total += entry.DailyPay;
                     row++;
@@ -1337,7 +1339,8 @@ namespace TimeTracker
                 row++;
                 worksheet.Cell($"E{row}").Value = "TOTAL:";
                 worksheet.Cell($"E{row}").Style.Font.Bold = true;
-                worksheet.Cell($"F{row}").Value = total;
+                worksheet.Cell($"F{row}").Value = (double)total;
+                worksheet.Cell($"F{row}").Style.NumberFormat.Format = "$#,##0.00";
                 worksheet.Cell($"F{row}").Style.Font.Bold = true;
 
                 row++;
