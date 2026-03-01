@@ -33,6 +33,7 @@ namespace TimeTracker
             LoadBusinessSettings();
             RefreshLocationsList();
             RefreshTimeEntriesList();
+            RefreshSettingsPanel();
             UpdateTotals();
         }
 
@@ -1126,6 +1127,38 @@ namespace TimeTracker
                                             if (lblCtrl is Label lbl2 && lbl2.Name == "lblTotalPay")
                                                 lbl2.Text = $"Total Pay: ${totalPay:F2}";
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void RefreshSettingsPanel()
+        {
+            foreach (TabPage tab in tabControl.TabPages)
+            {
+                foreach (Control ctrl in tab.Controls)
+                {
+                    if (ctrl is Panel panel)
+                    {
+                        foreach (Control grp in panel.Controls)
+                        {
+                            if (grp is GroupBox groupBox && groupBox.Text.Contains("Business Information"))
+                            {
+                                foreach (Control txtCtrl in groupBox.Controls)
+                                {
+                                    if (txtCtrl is TextBox txt)
+                                    {
+                                        if (txt.Name == "txtBusinessName") txt.Text = businessSettings.BusinessName;
+                                        else if (txt.Name == "txtBusinessAddress") txt.Text = businessSettings.BusinessAddress;
+                                        else if (txt.Name == "txtBusinessCity") txt.Text = businessSettings.BusinessCity;
+                                        else if (txt.Name == "txtBusinessState") txt.Text = businessSettings.BusinessState;
+                                        else if (txt.Name == "txtBusinessZip") txt.Text = businessSettings.BusinessZip;
+                                        else if (txt.Name == "txtBusinessPhone") txt.Text = businessSettings.BusinessPhone;
+                                        else if (txt.Name == "txtBusinessEmail") txt.Text = businessSettings.BusinessEmail;
                                     }
                                 }
                             }
