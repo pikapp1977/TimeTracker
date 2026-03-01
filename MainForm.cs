@@ -18,52 +18,10 @@ namespace TimeTracker
 
         public MainForm()
         {
-            string appDir = AppDomain.CurrentDomain.BaseDirectory;
-            string installDbPath = Path.Combine(appDir, "timetracker.db");
-            string appDataDbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TimeTracker", "timetracker.db");
-            
-            if (File.Exists(installDbPath))
-            {
-                try
-                {
-                    using var testConn = new SqliteConnection($"Data Source={installDbPath}");
-                    testConn.Open();
-                    using var cmd = testConn.CreateCommand();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS _write_test (id INTEGER)";
-                    cmd.ExecuteNonQuery();
-                    dbPath = installDbPath;
-                }
-                catch
-                {
-                    string appDataDir = Path.GetDirectoryName(appDataDbPath);
-                    if (!Directory.Exists(appDataDir))
-                        Directory.CreateDirectory(appDataDir);
-                    dbPath = appDataDbPath;
-                }
-            }
-            else if (File.Exists(appDataDbPath))
-            {
-                dbPath = appDataDbPath;
-            }
-            else
-            {
-                try
-                {
-                    using var testConn = new SqliteConnection($"Data Source={installDbPath}");
-                    testConn.Open();
-                    using var cmd = testConn.CreateCommand();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS _write_test (id INTEGER)";
-                    cmd.ExecuteNonQuery();
-                    dbPath = installDbPath;
-                }
-                catch
-                {
-                    string appDataDir = Path.GetDirectoryName(appDataDbPath);
-                    if (!Directory.Exists(appDataDir))
-                        Directory.CreateDirectory(appDataDir);
-                    dbPath = appDataDbPath;
-                }
-            }
+            string appDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TimeTracker");
+            if (!Directory.Exists(appDataDir))
+                Directory.CreateDirectory(appDataDir);
+            dbPath = Path.Combine(appDataDir, "timetracker.db");
             
             locations = new List<Location>();
             timeEntries = new List<TimeEntry>();
