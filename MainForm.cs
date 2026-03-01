@@ -922,8 +922,8 @@ namespace TimeTracker
             cmbType.Items.AddRange(new string[] { "Per Hour", "Per Day" });
             cmbType.SelectedItem = location.PayRateType;
 
-            Button btnSave = new Button { Text = "Save", Left = 380, Width = 140, Top = 860, Height = 50, DialogResult = DialogResult.OK };
-            Button btnCancel = new Button { Text = "Cancel", Left = 530, Width = 140, Top = 860, Height = 50, DialogResult = DialogResult.Cancel };
+            Button btnSave = new Button { Text = "Save", Left = 360, Width = 140, Top = 860, Height = 50, DialogResult = DialogResult.OK };
+            Button btnCancel = new Button { Text = "Cancel", Left = 510, Width = 140, Top = 860, Height = 50, DialogResult = DialogResult.Cancel };
 
             dialog.Controls.AddRange(new Control[] { 
                 lblFacility, txtFacility, lblContact, txtContact, lblEmail, txtEmail, 
