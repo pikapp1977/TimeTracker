@@ -882,7 +882,7 @@ namespace TimeTracker
             using var dialog = new Form
             {
                 Width = 700,
-                Height = 900,
+                Height = 950,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 Text = "Edit Location",
                 StartPosition = FormStartPosition.CenterParent,
@@ -890,40 +890,40 @@ namespace TimeTracker
                 MinimizeBox = false
             };
 
-            Label lblFacility = new Label { Left = 20, Top = 20, Width = 200, Text = "Facility Name:" };
-            TextBox txtFacility = new TextBox { Left = 20, Top = 65, Width = 620, Height = 30, Text = location.FacilityName };
+            Label lblFacility = new Label { Left = 20, Top = 20, Width = 200, Height = 25, Text = "Facility Name:" };
+            TextBox txtFacility = new TextBox { Left = 20, Top = 70, Width = 620, Height = 30, Text = location.FacilityName };
 
-            Label lblContact = new Label { Left = 20, Top = 110, Width = 200, Text = "Contact Name:" };
-            TextBox txtContact = new TextBox { Left = 20, Top = 155, Width = 620, Height = 30, Text = location.ContactName };
+            Label lblContact = new Label { Left = 20, Top = 115, Width = 200, Height = 25, Text = "Contact Name:" };
+            TextBox txtContact = new TextBox { Left = 20, Top = 165, Width = 620, Height = 30, Text = location.ContactName };
 
-            Label lblEmail = new Label { Left = 20, Top = 200, Width = 200, Text = "Contact Email:" };
-            TextBox txtEmail = new TextBox { Left = 20, Top = 245, Width = 620, Height = 30, Text = location.ContactEmail };
+            Label lblEmail = new Label { Left = 20, Top = 210, Width = 200, Height = 25, Text = "Contact Email:" };
+            TextBox txtEmail = new TextBox { Left = 20, Top = 260, Width = 620, Height = 30, Text = location.ContactEmail };
 
-            Label lblPhone = new Label { Left = 20, Top = 290, Width = 200, Text = "Contact Phone:" };
-            TextBox txtPhone = new TextBox { Left = 20, Top = 335, Width = 620, Height = 30, Text = location.ContactPhone };
+            Label lblPhone = new Label { Left = 20, Top = 305, Width = 200, Height = 25, Text = "Contact Phone:" };
+            TextBox txtPhone = new TextBox { Left = 20, Top = 355, Width = 620, Height = 30, Text = location.ContactPhone };
 
-            Label lblAddress = new Label { Left = 20, Top = 380, Width = 200, Text = "Street Address:" };
-            TextBox txtAddress = new TextBox { Left = 20, Top = 425, Width = 620, Height = 30, Text = location.Address };
+            Label lblAddress = new Label { Left = 20, Top = 400, Width = 200, Height = 25, Text = "Street Address:" };
+            TextBox txtAddress = new TextBox { Left = 20, Top = 450, Width = 620, Height = 30, Text = location.Address };
 
-            Label lblCity = new Label { Left = 20, Top = 470, Width = 200, Text = "City:" };
-            TextBox txtCity = new TextBox { Left = 20, Top = 515, Width = 280, Height = 30, Text = location.City };
+            Label lblCity = new Label { Left = 20, Top = 495, Width = 200, Height = 25, Text = "City:" };
+            TextBox txtCity = new TextBox { Left = 20, Top = 545, Width = 280, Height = 30, Text = location.City };
 
-            Label lblState = new Label { Left = 320, Top = 470, Width = 100, Text = "State:" };
-            TextBox txtState = new TextBox { Left = 320, Top = 515, Width = 100, Height = 30, Text = location.State };
+            Label lblState = new Label { Left = 320, Top = 495, Width = 100, Height = 25, Text = "State:" };
+            TextBox txtState = new TextBox { Left = 320, Top = 545, Width = 100, Height = 30, Text = location.State };
 
-            Label lblZip = new Label { Left = 440, Top = 470, Width = 100, Text = "Zip:" };
-            TextBox txtZip = new TextBox { Left = 440, Top = 515, Width = 200, Height = 30, Text = location.Zip };
+            Label lblZip = new Label { Left = 440, Top = 495, Width = 100, Height = 25, Text = "Zip:" };
+            TextBox txtZip = new TextBox { Left = 440, Top = 545, Width = 200, Height = 30, Text = location.Zip };
 
-            Label lblRate = new Label { Left = 20, Top = 560, Width = 200, Text = "Pay Rate ($):" };
-            TextBox txtRate = new TextBox { Left = 20, Top = 605, Width = 180, Height = 30, Text = location.PayRate.ToString("F2") };
+            Label lblRate = new Label { Left = 20, Top = 590, Width = 200, Height = 25, Text = "Pay Rate ($):" };
+            TextBox txtRate = new TextBox { Left = 20, Top = 640, Width = 180, Height = 30, Text = location.PayRate.ToString("F2") };
 
-            Label lblType = new Label { Left = 220, Top = 560, Width = 120, Text = "Type:" };
-            ComboBox cmbType = new ComboBox { Left = 220, Top = 605, Width = 180, Height = 30, DropDownStyle = ComboBoxStyle.DropDownList };
+            Label lblType = new Label { Left = 220, Top = 590, Width = 120, Height = 25, Text = "Type:" };
+            ComboBox cmbType = new ComboBox { Left = 220, Top = 640, Width = 180, Height = 30, DropDownStyle = ComboBoxStyle.DropDownList };
             cmbType.Items.AddRange(new string[] { "Per Hour", "Per Day" });
             cmbType.SelectedItem = location.PayRateType;
 
-            Button btnSave = new Button { Text = "Save", Left = 380, Width = 140, Top = 680, Height = 45, DialogResult = DialogResult.OK };
-            Button btnCancel = new Button { Text = "Cancel", Left = 530, Width = 140, Top = 680, Height = 45, DialogResult = DialogResult.Cancel };
+            Button btnSave = new Button { Text = "Save", Left = 380, Width = 140, Top = 720, Height = 45, DialogResult = DialogResult.OK };
+            Button btnCancel = new Button { Text = "Cancel", Left = 530, Width = 140, Top = 720, Height = 45, DialogResult = DialogResult.Cancel };
 
             dialog.Controls.AddRange(new Control[] { 
                 lblFacility, txtFacility, lblContact, txtContact, lblEmail, txtEmail, 
