@@ -1267,14 +1267,15 @@ namespace TimeTracker
                 var worksheet = workbook.Worksheets.Add("Invoice");
 
                 worksheet.Cell("A1").Value = "INVOICE";
-                worksheet.Cell("A1").Style.Font.FontSize = 20;
+                worksheet.Cell("A1").Style.Font.FontSize = 24;
                 worksheet.Cell("A1").Style.Font.Bold = true;
+                worksheet.Range("A1:F1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
                 worksheet.Cell("A3").Value = "From:";
                 worksheet.Cell("A3").Style.Font.Bold = true;
                 worksheet.Cell("B3").Value = string.IsNullOrEmpty(businessSettings.BusinessName) ? "Your Company Name" : businessSettings.BusinessName;
-                worksheet.Cell("A4").Value = "";
-                worksheet.Cell("B4").Value = string.IsNullOrEmpty(businessSettings.BusinessAddress) ? "" : businessSettings.BusinessAddress;
+                worksheet.Cell("B3").Style.Font.Bold = true;
+                worksheet.Cell("A4").Value = string.IsNullOrEmpty(businessSettings.BusinessAddress) ? "" : businessSettings.BusinessAddress;
                 string cityStateZip = "";
                 if (!string.IsNullOrEmpty(businessSettings.BusinessCity))
                     cityStateZip = businessSettings.BusinessCity;
@@ -1282,13 +1283,14 @@ namespace TimeTracker
                     cityStateZip += (cityStateZip.Length > 0 ? ", " : "") + businessSettings.BusinessState;
                 if (!string.IsNullOrEmpty(businessSettings.BusinessZip))
                     cityStateZip += " " + businessSettings.BusinessZip;
-                worksheet.Cell("B5").Value = cityStateZip;
-                worksheet.Cell("B6").Value = string.IsNullOrEmpty(businessSettings.BusinessPhone) ? "" : businessSettings.BusinessPhone;
-                worksheet.Cell("B7").Value = string.IsNullOrEmpty(businessSettings.BusinessEmail) ? "" : businessSettings.BusinessEmail;
+                worksheet.Cell("A5").Value = cityStateZip;
+                worksheet.Cell("A6").Value = string.IsNullOrEmpty(businessSettings.BusinessPhone) ? "" : businessSettings.BusinessPhone;
+                worksheet.Cell("A7").Value = string.IsNullOrEmpty(businessSettings.BusinessEmail) ? "" : businessSettings.BusinessEmail;
 
                 worksheet.Cell("D3").Value = "Bill To:";
                 worksheet.Cell("D3").Style.Font.Bold = true;
                 worksheet.Cell("E3").Value = location.FacilityName;
+                worksheet.Cell("E3").Style.Font.Bold = true;
                 worksheet.Cell("E4").Value = location.ContactName;
                 worksheet.Cell("E5").Value = string.IsNullOrEmpty(location.Address) ? "" : location.Address;
                 string locCityStateZip = "";
@@ -1302,56 +1304,89 @@ namespace TimeTracker
                 worksheet.Cell("E7").Value = location.ContactPhone;
                 worksheet.Cell("E8").Value = location.ContactEmail;
 
-                worksheet.Cell("A10").Value = "Invoice Date:";
-                worksheet.Cell("B10").Value = DateTime.Now.ToString("MM/dd/yyyy");
-                worksheet.Cell("A11").Value = "Period:";
-                worksheet.Cell("B11").Value = $"{startDate} to {endDate}";
+                worksheet.Cell("A10").Value = "Invoice #:";
+                worksheet.Cell("B10").Value = "1";
+                worksheet.Cell("A11").Value = "Invoice Date:";
+                worksheet.Cell("B11").Value = DateTime.Now.ToString("MM/dd/yyyy");
+                worksheet.Cell("A12").Value = "Due Date:";
+                worksheet.Cell("B12").Value = DateTime.Now.AddDays(30).ToString("MM/dd/yyyy");
+                worksheet.Cell("A13").Value = "Period:";
+                worksheet.Cell("B13").Value = $"{startDate} to {endDate}";
 
-                worksheet.Cell("A14").Value = "Date";
-                worksheet.Cell("B14").Value = "Arrival";
-                worksheet.Cell("C14").Value = "Departure";
-                worksheet.Cell("D14").Value = "Hours";
-                worksheet.Cell("E14").Value = "Pay Rate";
-                worksheet.Cell("F14").Value = "Amount";
-                worksheet.Range("A14:F14").Style.Font.Bold = true;
-                worksheet.Range("A14:F14").Style.Fill.BackgroundColor = XLColor.LightGray;
+                worksheet.Cell("A16").Value = "Date";
+                worksheet.Cell("B16").Value = "Description";
+                worksheet.Cell("C16").Value = "Quantity";
+                worksheet.Cell("D16").Value = "Unit Price";
+                worksheet.Cell("E16").Value = "Amount";
+                worksheet.Range("A16:E16").Style.Font.Bold = true;
+                worksheet.Range("A16:E16").Style.Fill.BackgroundColor = XLColor.LightGray;
+                worksheet.Range("A16:E16").Style.Border.BottomBorder = XLBorderStyleValues.Thin;
 
                 decimal total = 0;
-                int row = 15;
+                int row = 17;
                 foreach (var entry in entries.OrderBy(e => e.Date))
                 {
                     double hours = CalculateHoursWorked(entry.ArrivalTime, entry.DepartureTime);
                     decimal rate = location.PayRateType == "Per Hour" ? location.PayRate : location.PayRate / 8;
+                    string description = $"Worked {hours:F2} hours ({entry.ArrivalTime} - {entry.DepartureTime})";
                     
                     worksheet.Cell($"A{row}").Value = entry.Date;
-                    worksheet.Cell($"B{row}").Value = entry.ArrivalTime;
-                    worksheet.Cell($"C{row}").Value = entry.DepartureTime;
-                    worksheet.Cell($"D{row}").Value = hours;
-                    worksheet.Cell($"E{row}").Value = (double)rate;
+                    worksheet.Cell($"B{row}").Value = description;
+                    worksheet.Cell($"C{row}").Value = 1;
+                    worksheet.Cell($"D{row}").Value = (double)entry.DailyPay;
+                    worksheet.Cell($"D{row}").Style.NumberFormat.Format = "$#,##0.00";
+                    worksheet.Cell($"E{row}").Value = (double)entry.DailyPay;
                     worksheet.Cell($"E{row}").Style.NumberFormat.Format = "$#,##0.00";
-                    worksheet.Cell($"F{row}").Value = (double)entry.DailyPay;
-                    worksheet.Cell($"F{row}").Style.NumberFormat.Format = "$#,##0.00";
                     
                     total += entry.DailyPay;
                     row++;
                 }
 
                 row++;
-                worksheet.Cell($"E{row}").Value = "TOTAL:";
-                worksheet.Cell($"E{row}").Style.Font.Bold = true;
-                worksheet.Cell($"F{row}").Value = (double)total;
-                worksheet.Cell($"F{row}").Style.NumberFormat.Format = "$#,##0.00";
-                worksheet.Cell($"F{row}").Style.Font.Bold = true;
-
+                worksheet.Cell($"D{row}").Value = "Subtotal:";
+                worksheet.Cell($"D{row}").Style.Font.Bold = true;
+                worksheet.Cell($"E{row}").Value = (double)total;
+                worksheet.Cell($"E{row}").Style.NumberFormat.Format = "$#,##0.00";
+                
                 row++;
-                worksheet.Cell($"A{row + 2}").Value = "Notes:";
-                foreach (var entry in entries.Where(e => !string.IsNullOrWhiteSpace(e.Notes)))
+                worksheet.Cell($"D{row}").Value = "Tax (0%):";
+                worksheet.Cell($"D{row}").Style.Font.Bold = true;
+                worksheet.Cell($"E{row}").Value = 0;
+                worksheet.Cell($"E{row}").Style.NumberFormat.Format = "$#,##0.00";
+                
+                row++;
+                worksheet.Cell($"D{row}").Value = "TOTAL:";
+                worksheet.Cell($"D{row}").Style.Font.Bold = true;
+                worksheet.Cell($"D{row}").Style.Font.FontSize = 12;
+                worksheet.Cell($"E{row}").Value = (double)total;
+                worksheet.Cell($"E{row}").Style.NumberFormat.Format = "$#,##0.00";
+                worksheet.Cell($"E{row}").Style.Font.Bold = true;
+                worksheet.Cell($"E{row}").Style.Font.FontSize = 12;
+
+                row += 2;
+                worksheet.Cell($"A{row}").Value = "Payment Terms:";
+                worksheet.Cell($"A{row}").Style.Font.Bold = true;
+                row++;
+                worksheet.Cell($"A{row}").Value = "Payment due within 30 days.";
+                
+                if (entries.Any(e => !string.IsNullOrWhiteSpace(e.Notes)))
                 {
+                    row += 2;
+                    worksheet.Cell($"A{row}").Value = "Notes:";
+                    worksheet.Cell($"A{row}").Style.Font.Bold = true;
                     row++;
-                    worksheet.Cell($"A{row}").Value = $"{entry.Date}: {entry.Notes}";
+                    foreach (var entry in entries.Where(e => !string.IsNullOrWhiteSpace(e.Notes)))
+                    {
+                        worksheet.Cell($"A{row}").Value = $"{entry.Date}: {entry.Notes}";
+                        row++;
+                    }
                 }
 
-                worksheet.Columns().AdjustToContents();
+                worksheet.Column("A").Width = 12;
+                worksheet.Column("B").Width = 40;
+                worksheet.Column("C").Width = 10;
+                worksheet.Column("D").Width = 15;
+                worksheet.Column("E").Width = 15;
 
                 workbook.SaveAs(saveDialog.FileName);
                 MessageBox.Show($"Invoice saved to:\n{saveDialog.FileName}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
