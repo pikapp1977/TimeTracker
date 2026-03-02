@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="Version.props" />
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -11,7 +13,6 @@
     <Product>Time Tracker</Product>
     <Company>Personal</Company>
     <Description>A Windows Forms application for tracking work hours and generating invoices</Description>
-    <Version>1.0.41</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">

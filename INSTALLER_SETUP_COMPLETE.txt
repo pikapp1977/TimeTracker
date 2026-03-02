@@ -1,0 +1,37 @@
+✓ INSTALLER BUILD PROCESS - SETUP COMPLETE
+============================================
+
+Created Files:
+1. build-installer.bat       - Automated build script
+2. TimeTrackerSetup.iss      - Inno Setup installer script
+3. BUILD_README.md           - Complete build documentation
+
+How to Build:
+=============
+Simply double-click: build-installer.bat
+
+What It Does:
+1. Cleans previous builds
+2. Builds Release version
+3. Creates installer (if Inno Setup is installed)
+
+To Create Installer:
+====================
+1. Install Inno Setup: https://jrsoftware.org/isdown.php (optional, 2 minutes)
+2. Run: build-installer.bat
+3. Get: TimeTrackerSetup_v1.0.41.exe
+
+Without Inno Setup:
+===================
+- build-installer.bat still works!
+- Creates: TimeTracker.exe (standalone, no installer needed)
+- Location: bin\Release\net8.0-windows\win-x64\publish\
+
+Next Steps:
+===========
+1. Open File Explorer
+2. Navigate to: C:\users\admin\documents\timetracker
+3. Double-click: build-installer.bat
+4. Follow the prompts
+
+That's it! Your automated build process is ready.

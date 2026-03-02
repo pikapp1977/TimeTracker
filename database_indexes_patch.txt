@@ -1,0 +1,14 @@
+Add these lines at the end of the InitializeDatabase() method, just before the closing brace:
+
+            // Create indexes for improved query performance
+            command.CommandText = "CREATE INDEX IF NOT EXISTS idx_timeentries_date ON TimeEntries(Date)";
+            try { command.ExecuteNonQuery(); } catch { }
+
+            command.CommandText = "CREATE INDEX IF NOT EXISTS idx_timeentries_location ON TimeEntries(LocationId)";
+            try { command.ExecuteNonQuery(); } catch { }
+
+            command.CommandText = "CREATE INDEX IF NOT EXISTS idx_timeentries_status ON TimeEntries(Locked, Archived)";
+            try { command.ExecuteNonQuery(); } catch { }
+
+            command.CommandText = "CREATE INDEX IF NOT EXISTS idx_timeentries_invoice ON TimeEntries(LocationId, Date, Locked, Archived)";
+            try { command.ExecuteNonQuery(); } catch { }

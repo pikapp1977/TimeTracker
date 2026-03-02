@@ -14,6 +14,7 @@ namespace TimeTracker
     public partial class MainForm : Form
     {
         private TabControl tabControl;
+        private MenuStrip menuStrip;
         private readonly string dbPath;
         private List<Location> locations;
         private List<TimeEntry> timeEntries;
@@ -135,13 +136,31 @@ namespace TimeTracker
         private void InitializeComponent()
         {
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.SuspendLayout();
+            
+            // 
+            // menuStrip
+            // 
+            this.menuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStrip.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip.Name = "menuStrip";
+            this.menuStrip.Size = new System.Drawing.Size(1600, 28);
+            this.menuStrip.TabIndex = 1;
+            this.menuStrip.Text = "menuStrip";
+            
+            ToolStripMenuItem helpMenu = new ToolStripMenuItem("Help");
+            ToolStripMenuItem aboutMenuItem = new ToolStripMenuItem("About");
+            aboutMenuItem.Click += AboutMenuItem_Click;
+            helpMenu.DropDownItems.Add(aboutMenuItem);
+            this.menuStrip.Items.Add(helpMenu);
+            
             // 
             // tabControl
             // 
-            this.tabControl.Location = new System.Drawing.Point(12, 12);
+            this.tabControl.Location = new System.Drawing.Point(12, 40);
             this.tabControl.Name = "tabControl";
-            this.tabControl.Size = new System.Drawing.Size(1580, 700);
+            this.tabControl.Size = new System.Drawing.Size(1580, 672);
             this.tabControl.TabIndex = 0;
             // 
             // Locations Tab
@@ -174,12 +193,76 @@ namespace TimeTracker
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1600, 724);
             this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.menuStrip);
+            this.MainMenuStrip = this.menuStrip;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Time Tracker";
             this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        private void AboutMenuItem_Click(object? sender, EventArgs e)
+        {
+            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            string versionString = version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "Unknown";
+            
+            using var aboutDialog = new Form
+            {
+                Width = 450,
+                Height = 300,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = "About Time Tracker",
+                StartPosition = FormStartPosition.CenterParent,
+                MaximizeBox = false,
+                MinimizeBox = false
+            };
+
+            Label lblTitle = new Label
+            {
+                Text = "Time Tracker",
+                Font = new System.Drawing.Font("Segoe UI", 16, System.Drawing.FontStyle.Bold),
+                Location = new System.Drawing.Point(20, 20),
+                AutoSize = true
+            };
+
+            Label lblVersion = new Label
+            {
+                Text = $"Version {versionString}",
+                Font = new System.Drawing.Font("Segoe UI", 12),
+                Location = new System.Drawing.Point(20, 60),
+                AutoSize = true
+            };
+
+            Label lblDescription = new Label
+            {
+                Text = "A Windows Forms application for tracking\nwork hours and generating invoices",
+                Font = new System.Drawing.Font("Segoe UI", 10),
+                Location = new System.Drawing.Point(20, 100),
+                AutoSize = true
+            };
+
+            Label lblCopyright = new Label
+            {
+                Text = $"© {DateTime.Now.Year} Personal",
+                Font = new System.Drawing.Font("Segoe UI", 9),
+                Location = new System.Drawing.Point(20, 160),
+                AutoSize = true
+            };
+
+            Button btnOk = new Button
+            {
+                Text = "OK",
+                DialogResult = DialogResult.OK,
+                Location = new System.Drawing.Point(320, 200),
+                Size = new System.Drawing.Size(90, 35)
+            };
+
+            aboutDialog.Controls.AddRange(new Control[] { lblTitle, lblVersion, lblDescription, lblCopyright, btnOk });
+            aboutDialog.AcceptButton = btnOk;
+            aboutDialog.ShowDialog();
         }
 
         private Panel CreateLocationsPanel()
