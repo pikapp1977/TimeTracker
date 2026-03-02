@@ -20,3 +20,15 @@ TimeTrackerSetup_*.exe
 # Test results
 TestResults/
 *.trx
+
+# Code signing certificates (NEVER COMMIT THESE!)
+certificates/
+*.pfx
+*.p12
+*.cer
+*.crt
+*.key
+
+# Sensitive information
+*password*
+*secret*
