@@ -211,8 +211,8 @@ namespace TimeTracker
             
             using var aboutDialog = new Form
             {
-                Width = 450,
-                Height = 300,
+                Width = 500,
+                Height = 320,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 Text = "About Time Tracker",
                 StartPosition = FormStartPosition.CenterParent,
@@ -224,40 +224,44 @@ namespace TimeTracker
             {
                 Text = "Time Tracker",
                 Font = new System.Drawing.Font("Segoe UI", 16, System.Drawing.FontStyle.Bold),
-                Location = new System.Drawing.Point(20, 20),
-                AutoSize = true
+                Location = new System.Drawing.Point(30, 20),
+                Width = 420,
+                Height = 35
             };
 
             Label lblVersion = new Label
             {
                 Text = $"Version {versionString}",
                 Font = new System.Drawing.Font("Segoe UI", 12),
-                Location = new System.Drawing.Point(20, 60),
-                AutoSize = true
+                Location = new System.Drawing.Point(30, 65),
+                Width = 420,
+                Height = 30
             };
 
             Label lblDescription = new Label
             {
                 Text = "A Windows Forms application for tracking\nwork hours and generating invoices",
                 Font = new System.Drawing.Font("Segoe UI", 10),
-                Location = new System.Drawing.Point(20, 100),
-                AutoSize = true
+                Location = new System.Drawing.Point(30, 110),
+                Width = 420,
+                Height = 60
             };
 
             Label lblCopyright = new Label
             {
                 Text = $"© {DateTime.Now.Year} Personal",
                 Font = new System.Drawing.Font("Segoe UI", 9),
-                Location = new System.Drawing.Point(20, 160),
-                AutoSize = true
+                Location = new System.Drawing.Point(30, 185),
+                Width = 420,
+                Height = 25
             };
 
             Button btnOk = new Button
             {
                 Text = "OK",
                 DialogResult = DialogResult.OK,
-                Location = new System.Drawing.Point(320, 200),
-                Size = new System.Drawing.Size(90, 35)
+                Location = new System.Drawing.Point(360, 220),
+                Size = new System.Drawing.Size(100, 40)
             };
 
             aboutDialog.Controls.AddRange(new Control[] { lblTitle, lblVersion, lblDescription, lblCopyright, btnOk });
