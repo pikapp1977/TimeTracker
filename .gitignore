@@ -5,3 +5,18 @@ obj/
 TimeTrackerSetup.exe
 publish/
 installer/
+
+# Build outputs
+bin/
+obj/
+Release_Package/
+*.exe
+*.zip
+*.tar.gz
+
+# Installers
+TimeTrackerSetup_*.exe
+
+# Test results
+TestResults/
+*.trx

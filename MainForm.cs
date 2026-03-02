@@ -117,6 +117,19 @@ namespace TimeTracker
 
             command.CommandText = "ALTER TABLE BusinessSettings ADD COLUMN ShowClearAllButton INTEGER DEFAULT 0";
             try { command.ExecuteNonQuery(); } catch { }
+
+            // Create indexes for improved query performance
+            command.CommandText = "CREATE INDEX IF NOT EXISTS idx_timeentries_date ON TimeEntries(Date)";
+            try { command.ExecuteNonQuery(); } catch { }
+
+            command.CommandText = "CREATE INDEX IF NOT EXISTS idx_timeentries_location ON TimeEntries(LocationId)";
+            try { command.ExecuteNonQuery(); } catch { }
+
+            command.CommandText = "CREATE INDEX IF NOT EXISTS idx_timeentries_status ON TimeEntries(Locked, Archived)";
+            try { command.ExecuteNonQuery(); } catch { }
+
+            command.CommandText = "CREATE INDEX IF NOT EXISTS idx_timeentries_invoice ON TimeEntries(LocationId, Date, Locked, Archived)";
+            try { command.ExecuteNonQuery(); } catch { }
         }
 
         private void InitializeComponent()
@@ -367,7 +380,7 @@ namespace TimeTracker
             Label lblArrival = new Label { Text = "Arrival Time:", Location = new System.Drawing.Point(20, 78), AutoSize = true };
             ComboBox cmbArrivalHour = new ComboBox { Location = new System.Drawing.Point(20, 101), Width = 60, DropDownStyle = ComboBoxStyle.DropDownList };
             for (int i = 1; i <= 12; i++) cmbArrivalHour.Items.Add(i);
-            cmbArrivalHour.SelectedIndex = 7; // Default to 8 AM
+            cmbArrivalHour.SelectedIndex = 6; // Default to 7 AM
             ComboBox cmbArrivalMin = new ComboBox { Location = new System.Drawing.Point(85, 101), Width = 50, DropDownStyle = ComboBoxStyle.DropDownList };
             cmbArrivalMin.Items.AddRange(new string[] { "00", "15", "30", "45" });
             cmbArrivalMin.SelectedIndex = 0;
@@ -425,7 +438,7 @@ namespace TimeTracker
                 decimal dailyPay = CalculateDailyPay(selectedLocation, arrival, departure);
                 AddTimeEntry(selectedLocation.Id, date, arrival, departure, dailyPay, notes);
                 
-                cmbArrivalHour.SelectedIndex = 7;
+                cmbArrivalHour.SelectedIndex = 6;
                 cmbArrivalMin.SelectedIndex = 0;
                 cmbArrivalAMPM.SelectedIndex = 0;
                 cmbDepartureHour.SelectedIndex = 4;

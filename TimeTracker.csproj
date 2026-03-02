@@ -12,6 +12,9 @@
     <Company>Personal</Company>
     <Description>A Windows Forms application for tracking work hours and generating invoices</Description>
     <Version>1.0.41</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -19,9 +22,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TimeTracker.Tests\**" />
+    <EmbeddedResource Remove="TimeTracker.Tests\**" />
+    <None Remove="TimeTracker.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
     <PackageReference Include="ClosedXML" Version="0.102.2" />
     <PackageReference Include="QuestPDF" Version="2024.12.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="TimeTracker.Tests" />
   </ItemGroup>
 
 </Project>
